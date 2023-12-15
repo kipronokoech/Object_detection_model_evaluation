@@ -3,8 +3,12 @@ import numpy as np
 from matplotlib import pyplot as plt
 import os, json
 
+loc = os.path.dirname(__file__)
+os.chdir(loc)
+
 for image1 in os.listdir("./images"):
-    if not image1.startswith("_MG_3168_10.jpg"):
+    if "via_project_3Jul2020_10h24m(231)-complete" in image1:
+        # Skip annotations
         continue
     image = cv2.imread(f"./images/{image1}")
     image = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
@@ -29,7 +33,7 @@ for image1 in os.listdir("./images"):
     f1.write("x1,y1,x2,y2,confidence,class_id\n")
     for index, box in enumerate(pred[0]["rois"]):
         x1, y1, x2, y2 = box[1], box[0], box[3], box[2] # Mask R-CNN output (y_min, x_min, y_max, x_max)
-        confidence, class_id = pred[0]["scores"][index], pred[0]["class_ids"][index]
+        confidence, class_id = pred[0]["scores"][index], pred[0]["class_ids"][index]-1
         f1.write(f"{x1},{y1},{x2},{y2},{round(confidence, 4)},{class_id}\n")
         color_pred = (255, 0, 0)
         image = cv2.rectangle(image, (x1, y1), (x2, y2), color_pred, thickness=5)
@@ -39,8 +43,8 @@ for image1 in os.listdir("./images"):
 
     plt.figure(figsize=(12,12))
     plt.imshow(image)
-    plt.savefig(f"./plot_truts_and_preds/{image1}")
-    plt.show()        
+    plt.savefig(f"./plot_truts_and_preds/{image1}", bbox_inches="tight", pad_inches=0.1)
+    # plt.show()        
 
 
 # image = cv2.imread("./images/_MG_3168_10.jpg")

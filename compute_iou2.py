@@ -65,7 +65,7 @@ if __name__ == "__main__":
     df = pd.DataFrame(iou_values)
     df.index = range(1, len(detections)+1)
     df.columns = range(1, len(labels)+1)
-    plt.figure(figsize=(9, 7))  # Set the figure size
+    plt.figure(figsize=(10, 7))  # Set the figure size
     sns.heatmap(df, annot=True, linewidths=0.5)
     plt.xlabel("Ground Truths")
     plt.ylabel("Predictions")

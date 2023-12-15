@@ -1,6 +1,8 @@
 import numpy as np
 import matplotlib.pyplot as plt
 import seaborn as sns
+# Display floating-point numbers without scientific notation and display decimals in 2 places
+np.set_printoptions(suppress=True, precision=2)
 
 class ConfusionMatrix:
     def __init__(self, num_classes: int, CONF_THRESHOLD=0.3, IOU_THRESHOLD=0.5):
@@ -60,7 +62,6 @@ class ConfusionMatrix:
             # terminate processing by returning confusion matrix in the current state.
             return self.matrix
 
-
          # Extract class IDs for the detections - fifth column of the 
         detection_classes = detections[:, 5].astype(int)
 
@@ -102,9 +103,7 @@ class ConfusionMatrix:
             tp_fp_fn[class_id] = {"TPs": tp, 
                                     "FPs": fp, 
                                         "FNs": fn}
-
         return tp_fp_fn
-
 
     def plot_matrix(self, cmap='viridis', annot=True, fontsize=12):
         """
@@ -123,7 +122,6 @@ class ConfusionMatrix:
         ax.set_xlabel('Predicted', fontsize=fontsize)
         ax.set_ylabel('True', fontsize=fontsize)
         ax.set_title('Confusion Matrix', fontsize=fontsize + 2)
-
         # Show the plot
         plt.show()
 
@@ -132,69 +130,19 @@ filename = "_MG_3168_10"
 pred = f"./examples/preds2/{filename}.txt"
 truth = f"./examples/truths/{filename}.txt"
 
+pred = np.genfromtxt(pred, delimiter=',', skip_header=1)
+pred2 = pred.copy()
+pred2[:, :-2] = pred2[:, :-2].astype(int)
 
-detections = []
-with open(pred) as f:
-    next(f)
-    for line in f:
-        line = line.strip().split(",")
-        box = list(map(int, line[:4]))
-        confidence = [float(line[4])]
-        class_id = [0]
-        detections.append(box+confidence+class_id)
-detections = np.array(detections)
-
-labels = []
-with open(truth) as f:
-    next(f)
-    for line in f:
-        line = line.strip().split(",")
-        box = list(map(int, line[:4]))
-        class_id = [0]
-        labels.append(box+class_id)
-labels = np.array(labels)
-
-
+truth = np.genfromtxt(truth, delimiter=',', skip_header=1)
+truth2 = truth.copy()
+truth2[:, :-2] = truth2[:, :-2].astype(int)
 
 # Instantiate ConfusionMatrix with your desired thresholds
 confusion_matrix = ConfusionMatrix(num_classes=1, CONF_THRESHOLD=0.2, IOU_THRESHOLD=0.5)
 
-detections = np.array([[859,31,1002,176,0.973,0]])
-labels = np.array([[860,68,976,184,0]])
-
-
-# Detections array (shape: [N, 6])
-
-detections = np.array([[374,627,538,792,0.9996,0],
-[330,308,501,471,0.9994,0],
-[474,14,638,181,0.9992,0],
-[810,744,942,865,0.9966,0],
-[58,844,204,993,0.9965,0],
-[905,280,1022,425,0.9881,0],
-[887,412,1018,543,0.9811,0],
-[0,871,68,1008,0.9759,0],
-[859,31,1002,176,0.973,0],
-[698,949,808,1023,0.9303,0],
-[0,400,47,505,0.9203,0],
-[234,0,314,58,0.8163,0]])
-
-labels = np.array([[331,303,497,469,0],
-[385,624,543,782,0],
-[809,743,941,875,0],
-[883,410,1024,556,0],
-[918,287,1024,425,0],
-[860,68,976,184,0],
-[109,563,217,671,0],
-[0,401,60,515,0],
-[51,833,207,989,0],
-[0,867,80,1024,0],
-[273,877,403,1007,0],
-[701,939,821,1024,0],
-[905,608,1021,724,0],
-[471,17,629,175,0]])
-
-# Process the dummy batch
-matrix = confusion_matrix.process_detections(detections= detections, labels=labels)
+# Process detections
+matrix = confusion_matrix.process_detections(detections= pred2, labels=truth2)
 print(matrix)
 
 confusion_matrix.plot_matrix(fontsize=15)
@@ -205,59 +153,53 @@ print(result)
 
 
 
+# Instantiate ConfusionMatrix with your desired thresholds
+confusion_matrix = ConfusionMatrix(num_classes=1, CONF_THRESHOLD=0.2, IOU_THRESHOLD=0.5)
 
+ # Calling compute_iou with overlapping boxes - expecting IoU>0
+# Make sure that the input is a Numpy array of [M, 4] shape for 
+# detections and [N, 4] for labels. Since we have one par it will be [1,4] for both
+detection = np.array([[859, 31, 1002, 176, 0.973, 0]])
+label = np.array([[860, 68, 976, 184, 0]])
+matrix = confusion_matrix.process_detections(detections= detection, labels=label)
+print(matrix)
 
+confusion_matrix.plot_matrix(fontsize=15)
+result = confusion_matrix.compute_tp_fp_fn()
+print(result)
 
-
-
+confusion_matrix = ConfusionMatrix(num_classes=1, CONF_THRESHOLD=0.2, IOU_THRESHOLD=0.5)
+# Calling compute_iou with non-intersecting boxes
+detection = np.array([[810, 744, 942, 865, 0.9966, 0]])
+label = np.array([[109,563,217,671, 0]])
+matrix = confusion_matrix.process_detections(detections= detection, labels=label)
+print(matrix)
+confusion_matrix.plot_matrix(fontsize=15)
+result = confusion_matrix.compute_tp_fp_fn()
+print(result)
 
 
 
 exit()
-# Detections array (shape: [N, 6])
 
-detections = np.array([[374,627,538,792,0.9996,0],
-[330,308,501,471,0.9994,0],
-[474,14,638,181,0.9992,0],
-[810,744,942,865,0.9966,0],
-[58,844,204,993,0.9965,0],
-[905,280,1022,425,0.9881,0],
-[887,412,1018,543,0.9811,0],
-[0,871,68,1008,0.9759,0],
-[859,31,1002,176,0.973,0],
-[698,949,808,1023,0.9303,0],
-[0,400,47,505,0.9203,0],
-[234,0,314,58,0.8163,0]])
+filename = "_MG_3168_10"
+pred = f"./examples/preds2/{filename}.txt"
+truth = f"./examples/truths/{filename}.txt"
 
-detections = np.array(data)
-print(detections)
+pred = np.genfromtxt(pred, delimiter=',', skip_header=1)
+pred2 = pred.copy()
+pred2[:, :-2] = pred2[:, :-2].astype(int)
 
-labels = np.array([[331,303,497,469,0],
-[385,624,543,782,0],
-[809,743,941,875,0],
-[883,410,1024,556,0],
-[918,287,1024,425,0],
-[860,68,976,184,0],
-[109,563,217,671,0],
-[0,401,60,515,0],
-[51,833,207,989,0],
-[0,867,80,1024,0],
-[273,877,403,1007,0],
-[701,939,821,1024,0],
-[905,608,1021,724,0],
-[471,17,629,175,0]])
+truth = np.genfromtxt(truth, delimiter=',', skip_header=1)
+truth2 = truth.copy()
+truth2[:, :-2] = truth2[:, :-2].astype(int)
 
+# Process detections
+matrix = confusion_matrix.process_detections(detections= pred2, labels=truth2)
+print(matrix)
 
+confusion_matrix.plot_matrix(fontsize=15)
 
-# Instantiate ConfusionMatrix with your desired thresholds
-confusion_matrix = ConfusionMatrix(num_classes=1, CONF_THRESHOLD=0.8, IOU_THRESHOLD=0.4)
+result = confusion_matrix.compute_tp_fp_fn()
 
-# Process the dummy batch
-confusion_matrix.process_batch(detections= detections, labels=labels)
-
-print(confusion_matrix.return_matrix())
-# Print or return the confusion matrix
-# confusion_matrix.print_matrix()
-
-# confusion_matrix.plot_matrix(fontsize=15)
-
+print(result)

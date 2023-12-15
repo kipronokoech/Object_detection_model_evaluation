@@ -46,22 +46,26 @@ class ConfusionMatrix:
 
         # Calculate IoU for all pairs of ground truths and detections
         all_ious = compute_iou(labels[:, :4], detections[:, :4])
-        print(all_ious)
+
+        # Loop through all ground truths and merge them up with the detections
         for i, label in enumerate(labels):
             gt_class = gt_classes[i]
-            print(gt_class, all_ious[i, :])
+            # filters all pairs with IoU> threshold
             matches = np.where(all_ious[i, :] > self.iou_threshold)[0]
-            print("matches", matches)
+
             if len(matches) == 1:
+                # Count 1 match. If there are multiple matches count others as false positives
                 detection_class = detection_classes[matches[0]]
                 self.matrix[detection_class, gt_class] += 1
             else:
                 self.matrix[self.num_classes, gt_class] += 1
 
+        # Count detections that we missed by the model
         for i, detection in enumerate(detections):
             if len(np.where(all_ious[:, i] > self.iou_threshold)[0]) == 0:
                 detection_class = detection_classes[i]
                 self.matrix[detection_class, self.num_classes] += 1
+            
         return self.matrix
 
     def compute_tp_fp_fn(self):
@@ -103,7 +107,7 @@ class ConfusionMatrix:
         ax.set_title('Confusion Matrix', fontsize=fontsize + 2)
         plt.savefig("Output/matrix.png", bbox_inches="tight", pad_inches=0.1)
         # Show the plot
-        #plt.show()
+        plt.show()
 
 if __name__ == "__main__":
     # Instantiate ConfusionMatrix with your desired thresholds

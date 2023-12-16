@@ -32,7 +32,7 @@ IoU calculation is implemented in [compute_iou2.py](compute_iou2.py). Note that 
 
 #### Computing IoU for a single pair of detection
 
-When passing a single pair, like the one shown in this Figure (Right), you need to configure the input as shown below.
+When passing a single pair, like the one shown in this Figure below(Right), you need to configure the input as shown.
 
 ```python
 # Calling compute_iou function inside compute_iou2.ipy

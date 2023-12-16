@@ -7,7 +7,6 @@ import matplotlib.pyplot as plt
 loc = os.path.dirname(__file__)
 os.chdir(loc)
 
-
 # Testing the Evaluation Tool on multiple detection-label pairs
 filename = "_MG_3168_10"
 pred = f"./examples/preds2/{filename}.txt"

@@ -105,7 +105,7 @@ class ConfusionMatrix:
         ax.set_xlabel('Predicted', fontsize=fontsize)
         ax.set_ylabel('True', fontsize=fontsize)
         ax.set_title('Confusion Matrix', fontsize=fontsize + 2)
-        plt.savefig("Output/matrix.png", bbox_inches="tight", pad_inches=0.1)
+        plt.savefig("output/matrix.png", bbox_inches="tight", pad_inches=0.1)
         # Show the plot
         plt.show()
 
@@ -130,18 +130,35 @@ if __name__ == "__main__":
 
     # Run the Evaluation Tools on multiple detection-labels pairs
     confusion_matrix = ConfusionMatrix(num_classes=1, confidence_threshold=0.8, iou_threshold=0.5)
+
     detections = np.array([[374,627,538,792,0.9996,0],
-                        [330,308,501,471,0.9994,0],
-                        [474,14,638,181, 0.9992,0],
-                        [810,744,942,865, 0.9966,0],
-                        [905,280,1022,425, 0.9881,0]])
-    
+    [330,308,501,471,0.9994,0],
+    [474,14,638,181,0.9992,0],
+    [810,744,942,865,0.9966,0],
+    [58,844,204,993,0.9965,0],
+    [905,280,1022,425,0.9881,0],
+    [887,412,1018,543,0.9811,0],
+    [0,871,68,1008,0.9759,0],
+    [859,31,1002,176,0.973,0],
+    [698,949,808,1023,0.9303,0],
+    [0,400,47,505,0.9203,0],
+    [234,0,314,58,0.8163,0]])
+
+
     labels = np.array([[331,303,497,469, 0],
-                [385,624,543,782, 0],
-                [809,743,941,875, 0],
-                [883,410,1024,556, 0],
-                [918,287,1024,425, 0],
-                [860,68,976,184, 0]])
+    [385,624,543,782, 0],
+    [809,743,941,875, 0],
+    [883,410,1024,556, 0],
+    [918,287,1024,425, 0],
+    [860,68,976,184, 0],
+    [109,563,217,671, 0],
+    [0,401,60,515, 0],
+    [51,833,207,989, 0],
+    [0,867,80,1024, 0],
+    [273,877,403,1007, 0],
+    [701,939,821,1024, 0],
+    [905,608,1021,724, 0],
+    [471,17,629,175, 0]])
     matrix = confusion_matrix.process_detections(detections= detections, labels=labels)
     confusion_matrix.plot_matrix(fontsize=15)
     result = confusion_matrix.compute_tp_fp_fn()

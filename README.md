@@ -1,10 +1,11 @@
 # Object Detection Model Evaluation
 This repo contains code for evaluating multi-class object detection problem. 
 
-Specifically, this repo does three things:
+Specifically, this repo does two things:
 - Impelements Intersection over Union (IoU) metric,
-- General implementation of the evaluation of multi-class object detection models.
-- Shows how to use the code 
+- Impelements a complete evaluation of an object detection model using detection examples from Mask R-CNN
+
+
 
 ## Examples 
 

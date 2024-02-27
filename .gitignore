@@ -9,3 +9,4 @@ __pycache__
 run_evaluation.py
 compute_iou.py
 examples/plot_truts_and_preds/
+venv2/
